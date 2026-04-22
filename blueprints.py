@@ -4,69 +4,68 @@ from io import BytesIO
 from PIL import Image
 import base64
 
-st.set_page_config(page_title='Blueprint take-off AI', page_icon='👁️')
+st.set_page_config(page_title="Blueprint take-off AI", page_icon="👁️")
 
-st.markdown('# CAD Blueprint take-off AI')
+st.title("CAD Blueprint take-off AI")
 
-api_key = st.text_input('OpenAI API Key', '', type='password')
+api_key = st.text_input("OpenAI API Key", type="password")
+img_input = st.file_uploader(
+    "Upload drawing images",
+    type=["png", "jpg", "jpeg"],
+    accept_multiple_files=True
+)
 
-# Upload images (PDF later)
-img_input = st.file_uploader('Images', accept_multiple_files=True)
-
-if st.button('Send'):
-
+if st.button("Send"):
     if not api_key:
-        st.warning('API Key required')
+        st.warning("API Key required")
         st.stop()
 
     if not img_input:
-        st.warning('Upload at least one image')
+        st.warning("Please upload at least one image")
         st.stop()
 
-    msg = {
-        'role': 'user',
-        'content': []
-    }
+    client = OpenAI(api_key=api_key)
 
-    # ✅ CLEAR instruction (your actual goal)
-    msg['content'].append({
-        'type': 'text',
-        'text': 'Count all electrical sockets and switches shown on this drawing. Use the legend if present. Return ONLY a markdown table with columns: Item | Count.'
-    })
+    content = [
+        {
+            "type": "input_text",
+            "text": (
+                "Review these engineering drawing images and count all electrical sockets, "
+                "switches, and other clearly identifiable electrical points shown. "
+                "Return the result ONLY as a markdown table with columns: "
+                "Item | Count | Notes."
+            )
+        }
+    ]
 
     for img in img_input:
-        if img.name.split('.')[-1].lower() not in ['png', 'jpg', 'jpeg', 'webp']:
-            st.warning('Only .jpg, .png, .webp supported')
-            st.stop()
-
-        encoded_img = base64.b64encode(img.read()).decode('utf-8')
-
-        msg['content'].append({
-            'type': 'input_image',
-            'image_url': f"data:image/jpeg;base64,{encoded_img}"
-        })
-
-    # ✅ NEW API (this fixes your earlier error)
-    client = OpenAI(api_key=api_key)
+        encoded_img = base64.b64encode(img.read()).decode("utf-8")
+        content.append(
+            {
+                "type": "input_image",
+                "image_url": f"data:image/jpeg;base64,{encoded_img}",
+                "detail": "high"
+            }
+        )
 
     response = client.responses.create(
         model="gpt-4o",
-        input=[msg]
+        input=[
+            {
+                "role": "user",
+                "content": content
+            }
+        ]
     )
 
-    response_msg = response.output_text
+    response_text = response.output_text
 
-    # Display input
-    with st.chat_message('user'):
-        for i in msg['content']:
-            if i['type'] == 'text':
-                st.write(i['text'])
-            else:
-                with st.expander('Attached Image'):
-                    img = Image.open(BytesIO(base64.b64decode(i['image_url'].split(",")[1])))
-                    st.image(img)
+    with st.chat_message("user"):
+        st.write("Please review these uploaded drawings.")
+        for img in img_input:
+            img.seek(0)
+            preview = Image.open(BytesIO(img.read()))
+            st.image(preview, caption=img.name)
 
-    # Display output
-    if response_msg:
-        with st.chat_message('assistant'):
-            st.markdown(response_msg)
+    with st.chat_message("assistant"):
+        st.markdown(response_text)
