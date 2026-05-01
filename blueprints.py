@@ -30,7 +30,7 @@ if st.button("Send"):
         {
             "type": "input_text",
             "text": (
-               "Count all the doors shown in this architectural drawing and return the results as a table with columns: Door Type, Location, Quantity, Notes"
+               "First, read the electrical schedule/legend on this drawing and identify all the electrical symbols and their descriptions. Then carefully examine the floor plan and count how many times each symbol appears on the drawing. Return the results as a table with columns: Symbol Description, Quantity on Schedule, Quantity Counted on Drawing, Match (Yes/No), Notes. Flag any discrepancies between the schedule and what is drawn"
             )
         }
     ]
