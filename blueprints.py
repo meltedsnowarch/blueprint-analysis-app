@@ -5,7 +5,6 @@ from PIL import Image
 import base64
 
 st.set_page_config(page_title="Blueprint take-off AI", page_icon="👁️")
-
 st.title("CAD Blueprint take-off AI")
 
 api_key = st.text_input("OpenAI API Key", type="password")
@@ -19,25 +18,24 @@ if st.button("Send"):
     if not api_key:
         st.warning("API Key required")
         st.stop()
-
     if not img_input:
         st.warning("Please upload at least one image")
         st.stop()
 
     client = OpenAI(api_key=api_key)
 
-  content = [
-    {
-        "type": "input_text",
-        "text": (
-            "First read the electrical legend or schedule on this drawing and identify all socket and switch symbols and their descriptions. "
-            "Then carefully count every socket and switch shown on the floor plan. "
-            "Return the result ONLY as a markdown table with columns: "
-            "Item Type | Symbol Description | Quantity on Drawing | Notes."
-            "Flag any items shown in the legend that you cannot find on the drawing."
-        )
-    }
-]
+    content = [
+        {
+            "type": "input_text",
+            "text": (
+                "First read the electrical legend or schedule on this drawing and identify all socket and switch symbols and their descriptions. "
+                "Then carefully count every socket and switch shown on the floor plan. "
+                "Return the result ONLY as a markdown table with columns: "
+                "Item Type | Symbol Description | Quantity on Drawing | Notes. "
+                "Flag any items shown in the legend that you cannot find on the drawing."
+            )
+        }
+    ]
 
     for img in img_input:
         encoded_img = base64.b64encode(img.read()).decode("utf-8")
