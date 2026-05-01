@@ -26,14 +26,18 @@ if st.button("Send"):
 
     client = OpenAI(api_key=api_key)
 
-    content = [
-        {
-            "type": "input_text",
-            "text": (
-              "provide a takeoff of the quantities from this electrical drawing returning as a table"
-            )
-        }
-    ]
+  content = [
+    {
+        "type": "input_text",
+        "text": (
+            "First read the electrical legend or schedule on this drawing and identify all socket and switch symbols and their descriptions. "
+            "Then carefully count every socket and switch shown on the floor plan. "
+            "Return the result ONLY as a markdown table with columns: "
+            "Item Type | Symbol Description | Quantity on Drawing | Notes."
+            "Flag any items shown in the legend that you cannot find on the drawing."
+        )
+    }
+]
 
     for img in img_input:
         encoded_img = base64.b64encode(img.read()).decode("utf-8")
