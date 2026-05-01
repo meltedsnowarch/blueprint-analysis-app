@@ -30,10 +30,7 @@ if st.button("Send"):
         {
             "type": "input_text",
             "text": (
-                "Review these engineering drawing images and count all electrical sockets, "
-                "switches, and other clearly identifiable electrical points shown. "
-                "Return the result ONLY as a markdown table with columns: "
-                "Item | Count | Notes."
+               "Count all the doors shown in this architectural drawing and return the results as a table with columns: Door Type, Location, Quantity, Notes"
             )
         }
     ]
